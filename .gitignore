@@ -1,0 +1,5 @@
+
+__pycache__
+*.pyc
+deprecated_trainLinesStatus.py
+deprecated_test_trainsLinesStatus.py

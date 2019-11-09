@@ -1,83 +1,126 @@
-#! /usr/bin/python 
+#! /usr/bin/env python 
 
 import unittest
 from unittest.mock import Mock, patch
-import nose
-import requests_mock
-from nose.tools import assert_is_not_none
-from trainsLinesStatus import TFLAPI, HEADERS
 import trainsLinesStatus as tls
+from trainsLinesStatus import TFLAPI, HEADERS, SAVEFILE
 from colorama import Fore
-import requests
+import sys
 
 class Testing(unittest.TestCase):
-
-    def test_getLineIDs(self):
+    """
+    Testing: class that calls the functions
+    of the program trainsLinesStatus.py
+    """
+    def test_detectPythonVersion(self):
         """
-        Test the line IDs  
-        """
-        foo = {'id': 'foo', 'name': 'foo'}
-        bar = {'id': 'bar', 'name': 'bar'}
-        list_entries = [[foo, bar], [foo], [], '']
-        # some additions here about the list [''],
-        list_expect = ['foo,bar', 'foo', 'error', 'error']
-        for entry, expect in zip(list_entries, list_expect):
-            if type(entry) != list:
-                continue
-            elif len(entry) < 1:
-                continue
-            elif entry == '':
-                continue
-            elif entry == []:
-                continue
-            else:
-                returned = tls.getLineIDs(entry)
-                expected = expect
-                self.assertEqual(returned, expected)            
-
-    # how to use patches? 
-    def test_getTubeLinesNames(self):
-        """
-        test_getTubeLines: mock testing of the url
+        test_detectPythonVersion: to test
+        if python version is supported.
+        TODO
         """
         mock = Mock()
-        returned = mock.tls.getTubeLinesNames('dlr,tram')
-        # test the output?
 
-    def test_tubeStatusURL(self):
-        """ 
-
+    def test_checkLastTimeExecutedRequests(self):
         """
-        in_list = ['foo', 'bar', '']
-        for inp in in_list:
-            if inp == '':
-                continue
-            returned = tls.tubeStatusURL(inp)
-            expected = '{}/Line/{}/Status'.format(TFLAPI, inp)
+        test_checkLastTimeExecutedRequests: 
+        for the function that determines whether
+        a new request is necessary.
+        TODO
+        """
+        returned = tls.checkLastTimeExecutedRequests()
+        possible = [True, False]
+        if returned in possible:
+            print('ok')
+
+
+    def test_getDateTimeFormatted(self):
+        """
+        test_getDateTimeFormatted:
+        TODO
+        """
+        returned = tls.getDateTimeFormatted()
+
+
+    def test_compareTime(self):
+        """
+        test_compareTime: will check whether
+        the criteria for requesting are the
+        correct ones.
+        TODO: mock printing
+        """
+        thenTime_list = ['1:0', '1:0', '1:0']
+        nowTime_list = ['1:0', '1:4', '2:0']
+        expected_list = [False, False, True]
+        for then, now, expe in zip(thenTime_list, nowTime_list, expected_list):
+            returned = tls.compareTime(then, now) 
+            expected = expe
             self.assertEqual(returned, expected)
 
-    def test_getTubeStatus(self):
-        mock = Mock()
-        returned = mock.tls.getTubeStatus('foo,bar,baz')
-        # I am missing something here. Help me pleaaaaase <3
 
-    def test_printTubeNameStatusFormatted(self): 
+    def test_printFormattedData(self): 
         """
-        Test the printed message and color.
+        test_printFormattedData:
         """
-        list_status = ['Good Service', 'Minor Delays', 'Planned Closure', 'Part Closure', 'Part Suspended', 'bar']
-        list_colors = [Fore.CYAN, Fore.RED, Fore.YELLOW, Fore.MAGENTA, Fore.GREEN, Fore.BLUE]
+        mock = Mock()
+        print = mock
+        mock.tls.printFormattedData()
+        list_status = ['Good Service', 'Minor Delays', 
+                       'Severe Delays', 'Planned Closure',
+                       'Part Closure', 'Part Suspended', 'bar']
+        list_colors = [Fore.CYAN, Fore.RED,
+                       Fore.GREEN, Fore.YELLOW,
+                       Fore.MAGENTA, Fore.GREEN, Fore.BLUE]
         for s, c in zip(list_status, list_colors):
-            returned = tls.printTubeNameStatusFormatted('foo', s)  
-            expected = 'Line foo reports '+c+s+'\033[0m'
-            self.assertEqual(returned, expected)
+            mock.tls.printFormattedData()  
+            #expected = 'Line reports '+ c + s + '\033[0m'
+            #self.assertEqual(returned, expected)
 
-    #def test_getTubeStatus(self):
-    ##    """
-    ##    Test  
-    ##    """
-    ##    returned = 
-    ##    expected = 
+
+    def test_requestStatusFromServer(self):
+        """
+        test_requestStatusFromServerrequestStatusFromServer:
+        mock request from the server.
+        TODO
+        """
+        mock = Mock()
+        mock.tls.requestStatusFromServer()
+
+
+    def test_writeAndSaveData(self):
+        """
+        test_writeAndSaveData:
+        TODO
+        """
+        mock = Mock()
+        mock.tls.writeAndSaveData()
+
+
+    def test_createStatusURL(self):
+        """
+        test_createStatusURL:
+        TODO
+        """
+        mock = Mock()
+        mock.tls.createStatusURL()
+
+
+    def test_returnValidModesString(self):
+        """
+        test_returnValidModesString:
+        TODO
+        """
+        mock = Mock()
+        mock.tls.returnValidModesString()
+
+
+    def test_returnValidAllModesString(self):
+        """
+        test_returnValidAllModesString:
+        TODO
+        """
+        mock = Mock()
+        mock.tls.returnValidAllModesString()
+
 
 if __name__=='__main__':
     unittest.main()

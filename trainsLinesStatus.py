@@ -1,178 +1,257 @@
-#! /usr/bin/python 
+#! /usr/bin/env python
 
 import argparse
 import requests
 import json
 import sys
-from colorama import Fore, Back, Style
+import os
+import datetime
+import colorama
+from colorama import Fore
+import pandas as pd
 
-parser = argparse.ArgumentParser(description=' This program prints the train lines\
-            (i.e. tube, dlr, tram, overground) of London at \
-            the time that the program is executed.', \
-            epilog='The program is still under construction. \
-            Currently only tube lines are available. \
-            There is only the option of getting the status \
-            all lines, and not choose specific ones.')
-parser.add_argument('-m', '--tram', action='store_true', help='look only for tram lines')
-parser.add_argument('-t', '--tube', action='store_true', help='look only for tube lines')
-parser.add_argument('-d', '--dlr', action='store_true', help='look only for dlr lines')
-parser.add_argument('-o', '--overground', action='store_true', help='look only for overground lines')
+parser = argparse.ArgumentParser(
+            description="This program prints the\
+            train lines, i.e. tube, dlr, tram, overground\
+            of London at the time that the program is executed.\
+            The valid modes are only: tube, tram, dlr,\
+            overground. Enter the desired one(s) after the\
+            flag -m.")
+parser.add_argument('-m', '--modes', nargs='+', 
+                    help='entrer the train mode(s)')
+parser.add_argument('-a', '--all_modes', action='store_true',
+                    help='for tube lines, DLR, tram, overground')
+parser.add_argument('-f', '--force', action='store_true',
+                    help='force request, and also include'
+                    'the desired modes to')
 args = parser.parse_args()
 
+
 TFLAPI = 'https://api.tfl.gov.uk'
-HEADERS = {'Accept':'application/json; charset=utf-8'}
+HEADERS = {'Accept': 'application/json; charset=utf-8'}
+SAVEFILE = 'outputLinesStatus.csv'
 
 
-
-def getLineIDs(data):
+def detectPythonVersion():
     """
-    getLineNames: 
-    Input: data, which is a list of size equal to 11.
-    Returns: a comma separated string csNames.
-    Each list entry contains a dictionary, and for the 
-    key 'id', the value is the line name, e.g. victoria.
-    The string csNames contains all the tube lines names 
-    extracted from the list entries in the form 
-    victoria,circle,hammersmith-city,... etc.
-    It is used the 'id' key instead of the 'name' key.
+    detectPythonVersion: Args: - Returns: -
+    This module checks if the user 
+    has joined reality by raising Exception
+    if they are using Python2.x.
     """
-    csNames = [cs.get('id') for cs in data]
-    # Here I want to insert a test for the type 
-    # of the list entries, and the existence of such lines.
-    if  type(csNames) != list or len(csNames) < 1 or csNames == ['']:
-        print('getLineIDs: did not get any valid tube line names. Aborting.')
+    if sys.version_info[0] < 3:
+        message = 'Python' + str(sys.version_info[0]) +\
+                  '.x is about to retire. ' +\
+                  'Please join reality and update.'
+        raise Exception(message)
+
+
+def checkLastTimeExecutedRequests():
+    """
+    checkLastTimeExecutedRequests: Args: - Returns: -
+    This file checks the last time that a requests.get
+    was sent to the server, and if it was within 10 min
+    then, the file that keeps the status for each line
+    will be called, and the information will be printed
+    on the terminal. If 10 minutes have passed, then a
+    new request will be sent to the server.
+    """
+    toRequest = False
+    nowDate, nowTime = getDateTimeFormatted()
+    #print(nowDate)
+    #print(nowTime)
+    try:
+        with open(SAVEFILE, 'r') as f:
+            line = f.readline()
+            thenDate, thenTime = line.split(',')
+            #print(thenDate)
+            #print(thenTime)
+            if (nowDate != thenDate):
+                print('Detected different date. Will request.')
+                toRequest = True
+            else:
+                toRequest = compareTime(thenTime, nowTime)
+    except FileNotFoundError:
+        print('no file found, will request')
+        toRequest = True
+    except:
+        print('something went wrong.')
         sys.exit(-1)
-    csNames = ",".join(csNames)
-    return(csNames)
-
-def getTubeLinesNames(modeName): 
-    """
-    getTubeLinesNames: 
-    Args: the URL for the tube mode.
-    Returns: the names of the tube lines.
-    Tube lines names are requested from constant TFLAPITUBE.
-    The response is in JSON format, and it is
-    a list of size 11, as are the different lines.
-    Each list entry contains a dictionary 
-    with info about the line.
-    """
-    r = requests.get(modeName, headers=HEADERS)
-    if not r.ok :
-        print('Exits with request status code {} on {}.'.format(r.status_code, TFLAPITUBE))
-        sys.exit(-1)
-    data = r.json()
-    if (type(data) != list or len(data) < 1) :
-        print('getTubeLines: Request returned not list, or empty list of line names. Aborting.')
-        sys.exit(-1)
-    lineNames = getLineIDs(data)
-    return(lineNames)
-
-def tubeStatusURL(lineNames):
-    """
-    tubeStatusURL: Args: comma separated lines names string.
-    Returns: the appropriate url for the API that 
-    contains the status for all the tube lines.
-    """
-    if (not lineNames or lineNames =="") :
-        print('tubeStatusURL: ')
-        sys.exit(-1)
-    return("{}/Line/{}/Status".format(TFLAPI, lineNames))
-
-def getTubeStatus(lineNames):
-    """ 
-    getTubeStatus: Args: comma separated line names string.
-    Returns: -
-    Thie module request the status of all the tube lines.
-    The response is a list of size 11 for all the lines. 
-    Each list entry contains a distionary, and for the 
-    key 'lineStatuses', the value is another list of size 1 
-    that contains a dictionary. In that dictionary, the 
-    key 'statusSeverityDescription' has the value of 
-    the line status, e.g. 'Good Service', 'Planned Closure', 
-    'Part Closure', 'Part Suspended', 'Minor Delays', etc.
-    """
-    url = tubeStatusURL(lineNames)
-    r = requests.get(url, headers=HEADERS)
-    if not r.ok :
-        print('Exits with request status code {} on {}.'.format(r.status_code, TFLAPI))
-        sys.exit(-1)
-    data = r.json()
-    if (type(data) != list or len(data) < 1) :
-        print('getTubeStatus: Received not list, or empty list of status for lines, Aborting.')
-        sys.exit(-1)
-    for status in data:
-        if (type(status) != dict ) :
-            print('getTubeStatus: did not receive dict type. Contact me.')
-            sys.exit(-1)
-        lineName = status.get('name')
-        lineStatus = status.get('lineStatuses')[0]
-        lineStatus = lineStatus.get('statusSeverityDescription')
-        statusPrint = printTubeNameStatusFormatted(lineName, lineStatus)
-        print(statusPrint)
+    if (os.path.getsize(SAVEFILE) < 1):
+        toRequest = True
+    return(toRequest)
 
 
-def printTubeNameStatusFormatted(lineName, lineStatus):
-    """ 
-    printTubeNameStatusFormatted: Args: string lineName, and string lineStatus
-    Returns: The formatted string that will be printed in the terminal.
-    The format has a different color for the various status.
-    """
-    if (lineStatus == 'Good Service'):
-        clr = Fore.CYAN
-    elif (lineStatus == 'Minor Delays'):
-        clr = Fore.RED
-    elif (lineStatus == 'Planned Closure'):
-        clr = Fore.YELLOW
-    elif (lineStatus == 'Part Closure'):
-        clr = Fore.MAGENTA
-    elif (lineStatus == 'Part Suspended'):
-        clr = Fore.GREEN
+def getDateTimeFormatted():
+    nowTime = datetime.datetime.now()
+    date = str('{}-{}-{}'.format(nowTime.year, nowTime.month, nowTime.day))
+    time = str('{}:{}'.format(nowTime.hour, nowTime.minute))
+    return(date, time)
+
+
+def compareTime(thenTime, nowTime):
+    thenHr, thenMin = thenTime.split(':')
+    nowHr, nowMin = nowTime.split(':')
+    #print(thenHr)
+    #print(thenMin)
+    #print(nowHr)
+    #print(nowMin)
+    if (thenHr != nowHr):
+        print('Different hour, will request.')
+        toRequest = True
+    elif (int(nowMin) - int(thenMin) > 5):
+        print('More than 5 min difference, will request.')
+        toRequest = True
     else:
-        clr = Fore.BLUE 
-    return(('Line {} reports '+clr+'{}'+'\033[0m').format(lineName, lineStatus))
+        print('No need to request. Not enough time passed.')
+        toRequest = False
+    return(toRequest)
 
-def printModeStatus(modeName):
+
+def printFormattedData():
     """
-    printModeStatus: The function that 
+    printFormattedData: Args: - Returns: -
+    this function reads the csv file named SAVEFILE
+    and the status of each line is printed with
+    the appropriate color.
     """
-    lineNames = getTubeLinesNames(modeName)
-    getTubeStatus(lineNames)
+    data = pd.read_csv(SAVEFILE, names = ['lineName', 'lineStatus'],
+                       header = 0)
+    for i in range(len(data)):
+        tempName = data['lineName'][i]
+        tempStat = data['lineStatus'][i]
+        if (tempStat == 'Good Service'):
+            clr = Fore.CYAN
+        elif (tempStat == 'Minor Delays'):
+            clr = Fore.RED
+        elif (tempStat == 'Severe Delays'):
+            clr = Fore.GREEN
+        elif (tempStat == 'Planned Closure'):
+            clr = Fore.YELLOW
+        elif (tempStat == 'Part Closure'):
+            clr = Fore.MAGENTA
+        elif (tempStat == 'Part Suspended'):
+            clr = Fore.GREEN
+        else:
+            clr = Fore.BLUE
+        print(('{} Line reports ' + clr +\
+              '{} \033[0m').format(tempName, tempStat))
+
+
+def requestStatusFromServer(url):
+    """
+    requestStatusFromServer: Args: url [string]
+    Returns: [list of dictionary]
+    This module will request information
+    on lines status and will return then
+    in the form of list contaning a dictionary.
+    """
+    r = requests.get(url, headers=HEADERS)
+    if not r.ok:
+        print('Exits with request status code'
+              '{} on {}.'.format(r.status_code, url))
+        sys.exit(-1)
+    data = r.json()
+    if (type(data) != list or len(data) < 1):
+        print('requestFromServer: Received not list,'
+              'or empty list of status for lines, Aborting.')
+        sys.exit(-1)
+    return(data)
+
+
+def writeAndSaveData(data):
+    """
+    """
+    with open(SAVEFILE, 'w') as f:
+        date, time = getDateTimeFormatted()
+        f.write('{},{}\n'.format(date, time))
+        for status in data:
+            if (type(status) != dict):
+                print('requestFromServer: contact me')
+                sys.exit(-1)
+            lineName = status.get('name')
+            lineStatus = status.get('lineStatuses')[0]
+            lineStatus = lineStatus.get('statusSeverityDescription')
+            f.write('{},{}\n'.format(lineName, lineStatus))
+
+
+def createStatusURL(modes):
+    """
+    include appropriate if checks
+    the if statement below must have already
+    been checked.
+    """
+    #if (not modes or modes == ""):
+    #    print('createStatusURL: ')
+    #    sys.exit(-1)
+    #return("{}/line/mode/{}/status".format(TFLAPI, modes))
+    try:
+        url = '{}/line/mode/{}/status'.format(TFLAPI, modes)
+    except:
+        # include appropriate exception can include many except's
+        # for each raised exception!!!
+       pass
+    return(url)
+
+
+def returnValidModesString(modes):
+    """
+    returnValideModesString:
+    correction to accelerate testing of the modes
+    validity. so that it rejects non-valid or
+    non-implemented modes.
+    """
+    request_modes = []
+    if 'tube' in modes:
+        request_modes.append('tube')
+    if 'overground' in modes:
+        request_modes.append('overground')
+    if 'tram' in modes:
+        request_modes.append('tram')
+    if 'dlr' in modes:
+        request_modes.append('dlr')
+    if (len(request_modes) < 1 or type(request_modes) != list):
+        print('returnValidModesString: received no valid modes.'
+              ' Aborting.')
+        sys.exit(-1)
+    request_modes = ','.join(request_modes)
+    return(request_modes)
+
+
+def returnAllValidModesString():
+    """
+    returnAllValidModesString: Args: - 
+    Returns: all valid train modes.
+    This is hard coded to include only
+    dlr, tram, tube, overgound.
+    """
+    request_modes = 'tube,tram,overground,dlr'
+    return(request_modes)
+
 
 def main():
-    """ 
-    main: Args: the arguments that are parsed from the terminal. 
-    The appropriate arguments are described through the command 
-    "./trainsLinesStatus.py --help"
-    If they are not correct, then the program prints an error message 
-    and exits.
-    According to the argument parsed, the appropriate functions are 
-    called. For instance, tube has multiple line names, whereas the 
-    the rest of the modes (tram, overground, dlr) are single lines.
     """
-    if len(sys.argv) < 2 :
-        print('ERROR: Please supply a valid argument for train mode. Aborting.')
-        sys.exit(-1)
-    elif (args.tube):
-        modeName = TFLAPI + '/Line/Mode/tube'
-        printModeStatus(modeName)
-    elif (args.dlr):
-        modeName = TFLAPI + '/line/dlr/status'
-        print('ERROR: not yet implemented dlr lines.')
-        sys.exit(-1)
-    elif (args.tram):
-        modeName = TFLAPI + '/line/tram/status'
-        print('ERROR: not yet implemented tram lines.')
-        sys.exit(-1)
-    elif (args.overground):
-        modeName = TFLAPI + '/line/dlr/status'
-        print('ERROR: not yet implemented London overground lines.')
-        sys.exit(-1)
-    else :
-        print('ERROR: please provide a valid train mode type. See help for the \
-                valid modes. Aborting.')
-        sys.exit(-1)
+    """
+    detectPythonVersion()
+    if (args.force):
+        toRequest = True
+    else:
+        toRequest = checkLastTimeExecutedRequests()
+    if toRequest:
+        if (args.modes):
+            modesString = returnValidModesString(args.modes)
+        elif (args.all_modes):
+            modesString = returnAllValidModesString()
+        else:
+            parser.print_help()
+            sys.exit(-1)
+        statusURL = createStatusURL(modesString)
+        data = requestStatusFromServer(statusURL)
+        writeAndSaveData(data)
+    else:
+        print('No request. Reads output from file.')
+    printFormattedData()
+
 
 if __name__ == "__main__":
     main()
-
-
