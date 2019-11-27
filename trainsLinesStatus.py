@@ -6,7 +6,6 @@ import json
 import sys
 import os
 import datetime
-import colorama
 from colorama import Fore
 import pandas as pd
 
@@ -36,13 +35,13 @@ def detectPythonVersion():
     """
     detectPythonVersion: Args: - Returns: -
     This module checks if the user 
-    has joined reality by raising Exception
-    if they are using Python2.x.
+    is using Python2.x. and raises exception.
     """
-    if sys.version_info[0] < 3:
-        message = 'Python' + str(sys.version_info[0]) +\
-                  '.x is about to retire. ' +\
-                  'Please join reality and update.'
+    if sys.version_info.major < 3:
+        message = 'Python' + str(sys.version_info.major) +\
+                  str(sys.version_info.minor) +\
+                  ' is retired or about to retire. ' +\
+                  'Please update.'
         raise Exception(message)
 
 
@@ -58,27 +57,23 @@ def checkLastTimeExecutedRequests():
     """
     toRequest = False
     nowDate, nowTime = getDateTimeFormatted()
-    #print(nowDate)
-    #print(nowTime)
     try:
         with open(SAVEFILE, 'r') as f:
             line = f.readline()
             thenDate, thenTime = line.split(',')
-            #print(thenDate)
-            #print(thenTime)
             if (nowDate != thenDate):
-                print('Detected different date. Will request.')
+                print('Detected different date, will request.')
                 toRequest = True
             else:
                 toRequest = compareTime(thenTime, nowTime)
-    except FileNotFoundError:
-        print('no file found, will request')
+    except FileNotFoundError as err:
+        print(err)
+        print('No file found, will request.')
         toRequest = True
-    except:
-        print('something went wrong.')
+    except ValueError as err:
+        print(err)
+        print('The code will abort.')
         sys.exit(-1)
-    if (os.path.getsize(SAVEFILE) < 1):
-        toRequest = True
     return(toRequest)
 
 
@@ -92,10 +87,6 @@ def getDateTimeFormatted():
 def compareTime(thenTime, nowTime):
     thenHr, thenMin = thenTime.split(':')
     nowHr, nowMin = nowTime.split(':')
-    #print(thenHr)
-    #print(thenMin)
-    #print(nowHr)
-    #print(nowMin)
     if (thenHr != nowHr):
         print('Different hour, will request.')
         toRequest = True
@@ -103,7 +94,7 @@ def compareTime(thenTime, nowTime):
         print('More than 5 min difference, will request.')
         toRequest = True
     else:
-        print('No need to request. Not enough time passed.')
+        print('No need to request, not enough time passed.')
         toRequest = False
     return(toRequest)
 
@@ -181,16 +172,11 @@ def createStatusURL(modes):
     the if statement below must have already
     been checked.
     """
-    #if (not modes or modes == ""):
-    #    print('createStatusURL: ')
-    #    sys.exit(-1)
-    #return("{}/line/mode/{}/status".format(TFLAPI, modes))
     try:
         url = '{}/line/mode/{}/status'.format(TFLAPI, modes)
     except:
-        # include appropriate exception can include many except's
-        # for each raised exception!!!
-       pass
+        
+        pass
     return(url)
 
 
