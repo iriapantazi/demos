@@ -21,20 +21,11 @@ See requirements.txt for packages.
 ### **Running the tests**
 Simply type `./test_trainsLinesStatus.py`
 
-## **Examples** 
-![](img/example_output.png"Output Example")
-
-## **Known Issues / TODO** 
-Some of the required amendments are listed here:
-* finalise the test functions
-* validation -- cerberus
-* raise exceptions (try/except) for dictionaries
+### **Examples** 
+![image](img/example_output.png "Output Example")
 
 ## **Authors** 
 * [Iria Pantazi](iria.a.pantazi@gmail.com)
 
 ## **License** 
 MIT License
-
-## **Acknowledgments**
-* [a friend of mine](you@know.who)
