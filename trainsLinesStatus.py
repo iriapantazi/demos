@@ -82,30 +82,21 @@ def checkLastTimeExecutedRequests():
     return(toRequest)
 
 
-def associateStatusColor(status):
+def associateStatusColor(rowCode):
     """
     associateStatusColor:
     Args: status [str]
-    Return: clr [ANSI]
-    This function assigns colors for
-    different line status.
+    Return: clr [str]
+    This function assigns colors in ANSI format
+    for different line status.
     """
-    #validCodes = list(range(0, 20))
-    #if (status == 'Good Service'):
-    #    clr = Fore.CYAN
-    #elif (status == 'Minor Delays'):
-    #    clr = Fore.RED
-    #elif (status == 'Severe Delays'):
-    #    clr = Fore.GREEN
-    #elif (status == 'Planned Closure'):
-    #    clr = Fore.YELLOW
-    #elif (status == 'Part Closure'):
-    #    clr = Fore.MAGENTA
-    #elif (status == 'Part Suspended'):
-    #    clr = Fore.GREEN
-    #else:
-    #    clr = Fore.BLUE
-    clr = Fore.BLUE
+    colors = ['30', '31', '32', '33', '34',
+            '35','36', '37','30;1m', '31;1m', 
+            '32;1m', '33;1m', '34;1m', '35;1m',
+            '36;1m', '37;1m', '30;1m', '31;1m', 
+            '32;1m', '33;1m', '34;1m']
+    colors = ['\u001b['+cl for cl in colors]
+    clr = colors[rowCode]
     return(clr)
 
 
@@ -114,8 +105,8 @@ def printFormattedData():
     printFormattedData: 
     Args: - 
     Returns: -
-    This function reads the csv file named SAVEFILE
-    and the status of each line is printed in the
+    This function reads from SAVEFILE the name(s)
+    and the status of each line and prints to the
     standard output.
     """
     with open(SAVEFILE, 'r') as f:
@@ -126,7 +117,7 @@ def printFormattedData():
             rowName = row[0]
             rowCode = row[1]
             rowDesc = row[2]
-            clr = associateStatusColor(rowCode)
+            clr = associateStatusColor(int(rowCode))
             print(('{} Line reports ' + clr +\
                     '{} \033[0m').format(rowName, rowDesc))
 
