@@ -27,5 +27,5 @@ Simply type `./test_trainsLinesStatus.py`
 ## **Authors** 
 * [Iria Pantazi](iria.a.pantazi@gmail.com)
 
-## **License** 
-MIT License
+## **Why logging**
+
