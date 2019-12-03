@@ -11,26 +11,29 @@ from colorama import Fore
 import csv
 import logging
 
+
 parser = argparse.ArgumentParser(
             description="This program prints the"
-            " train lines, i.e. tube, dlr, tram, overground"
+            " train lines, i.e. tube, etc."
             " of London at the time that the program is executed."
-            " The valid modes are only: tube, tram, dlr,"
+            " The valid modes are only: tube, tram, dlr, tflrail,"
             " overground. Enter the desired one(s) after the"
             " flag -m, or use -a for all modes. Flag -f forces"
             " the request even if not enough time has passed.")
 parser.add_argument('-m', '--modes', nargs='+', 
                     help='entrer the train mode(s)')
 parser.add_argument('-a', '--all_modes', action='store_true',
-                    help='for tube lines, DLR, tram, overground')
+                    help='for tube lines, DLR, tram, tflrail, overground')
 parser.add_argument('-f', '--force', action='store_true',
                     help='force request, and also include'
                     'the desired mode(s)')
 args = parser.parse_args()
 
+
 logging.basicConfig(filename='tfl_requests.log',
         filemode='w',
         format='%(asctime)s--%(levelname)s--%(message)s')
+
 
 TFLAPI = 'https://api.tfl.gov.uk'
 HEADERS = {'Accept': 'application/json; charset=utf-8'}
@@ -90,6 +93,10 @@ def associateStatusColor(rowCode):
     This function assigns colors in ANSI format
     for different line status.
     """
+    if rowCode >= 24:
+        logging.error('No available colour for this mode. ' 
+                'Modify the length of the colors list. ')
+        raise Exception('See log file.')
     colors = ['BLUE', 'CYAN', 'RED', 'MAGENTA', 'GREEN', 'YELLOW']*4
     color = colors[rowCode]
     clr = getattr(Fore, color)
@@ -110,10 +117,14 @@ def printFormattedData():
         time = f.readline()
         f_reader = csv.reader(f, delimiter=',') 
         for row in f_reader:
-            rowName = row[0]
-            rowCode = row[1]
-            rowDesc = row[2]
-            clr = associateStatusColor(int(rowCode))
+            try:
+                rowName = row[0]
+                rowCode = int(row[1])
+                rowDesc = row[2]
+                clr = associateStatusColor(rowCode)
+            except Exception as e:
+                logging.error(e)
+                sys.exit(-1)
             print(('{} Line reports ' + clr +\
                     '{}' + Fore.RESET).format(rowName, rowDesc))
 
@@ -134,7 +145,7 @@ def requestStatusFromServer(url):
         sys.exit(-1)
     data = r.json()
     if (type(data) != list or len(data) < 1):
-        logging.error('requestFromServer: Received not list,'
+        logging.error('requestFromServer: Received not list, '
               'or empty list of status for lines, Aborting.')
         sys.exit(-1)
     return(data)
@@ -142,26 +153,46 @@ def requestStatusFromServer(url):
 
 def writeAndSaveData(data):
     """
+    writeAndSaveData:
+    Args: data [list]
+    Returns: -
+    This function opens a file where the output will 
+    be written, and saves the line name, status code,
+    and status message as comma separated values.
     """
     with open(SAVEFILE, 'w') as f:
         nowTime = int(time.time())
         f.write('{}\n'.format(nowTime))
+        if type(data) != list: 
+            logging.error('Expected a list.')
+            sys.exit(-1)
         for status in data:
             if (type(status) != dict):
-                logging.error('requestFromServer: contact me')
+                logging.error('Expected a dictionary.')
                 sys.exit(-1)
             lineName = status.get('name')
+            if lineName == None:
+                logging.error('No such key found in dictionary ' + str(status))
+                sys.exit(-1)
             lineStatus = status.get('lineStatuses')[0]
             statusCode = lineStatus.get('statusSeverity')
+            if statusCode == None:
+                logging.error('No such key found in dictionary ' + str(status))
+                sys.exit(-1)
             statusDescription = lineStatus.get('statusSeverityDescription')
+            if statusDescription == None:
+                logging.error('No such key found in dictionary ' + str(status))
+                sys.exit(-1)
             f.write('{},{},{}\n'.format(lineName, statusCode, statusDescription))
 
 
 def createStatusURL(modes):
     """
-    include appropriate if checks
-    the if statement below must have already
-    been checked.
+    createStatusURL: 
+    Args: modes [str]
+    Returns: url [str]
+    This function generates the appropriate url for
+    requesting the status of valid modes.
     """
     try:
         url = '{}/line/mode/{}/status'.format(TFLAPI, modes)
@@ -202,7 +233,7 @@ def returnAllValidModesString():
     Args: - 
     Returns: all valid train modes.
     This is hard coded to include only
-    dlr, tram, tube, overgound.
+    dlr, tram, tube, overgound, tflrail.
     """
     request_modes = 'tube,tram,overground,dlr,tflrail'
     return(request_modes)
