@@ -90,13 +90,9 @@ def associateStatusColor(rowCode):
     This function assigns colors in ANSI format
     for different line status.
     """
-    colors = ['30', '31', '32', '33', '34',
-            '35','36', '37','30;1m', '31;1m', 
-            '32;1m', '33;1m', '34;1m', '35;1m',
-            '36;1m', '37;1m', '30;1m', '31;1m', 
-            '32;1m', '33;1m', '34;1m']
-    colors = ['\u001b['+cl for cl in colors]
-    clr = colors[rowCode]
+    colors = ['BLUE', 'CYAN', 'RED', 'MAGENTA', 'GREEN', 'YELLOW']*4
+    color = colors[rowCode]
+    clr = getattr(Fore, color)
     return(clr)
 
 
@@ -119,7 +115,7 @@ def printFormattedData():
             rowDesc = row[2]
             clr = associateStatusColor(int(rowCode))
             print(('{} Line reports ' + clr +\
-                    '{} \033[0m').format(rowName, rowDesc))
+                    '{}' + Fore.RESET).format(rowName, rowDesc))
 
 
 def requestStatusFromServer(url):
