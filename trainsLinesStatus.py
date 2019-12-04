@@ -23,7 +23,8 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-m', '--modes', nargs='+', 
                     help='entrer the train mode(s)')
 parser.add_argument('-a', '--all_modes', action='store_true',
-                    help='for tube lines, DLR, tram, tflrail, overground')
+                    help='for tube lines, DLR, tram, tflrail,'
+                    ' overground')
 parser.add_argument('-f', '--force', action='store_true',
                     help='force request, and also include'
                     'the desired mode(s)')
@@ -48,9 +49,10 @@ def detectPythonVersion():
     """
     if sys.version_info.major < 3:
         message = 'Python' + str(sys.version_info.major) +\
-                  str(sys.version_info.minor) +\
+                  '.' + str(sys.version_info.minor) +\
                   ' is retired or about to retire. ' +\
                   'Please update.'
+        logging.error(message)
         raise Exception(message)
 
 
@@ -58,7 +60,7 @@ def checkLastTimeExecutedRequests():
     """
     checkLastTimeExecutedRequests: 
     Args: - 
-    Returns: -
+    Returns: toRequest [bool]
     This file checks the last time that a requests.get
     was sent to the server. If it was within 5 min
     the status will be read from the SAVEFILE.
@@ -93,11 +95,12 @@ def associateStatusColor(rowCode):
     This function assigns colors in ANSI format
     for different line status.
     """
-    if rowCode >= 24:
-        logging.error('No available colour for this mode. ' 
-                'Modify the length of the colors list. ')
-        raise Exception('See log file.')
-    colors = ['BLUE', 'CYAN', 'RED', 'MAGENTA', 'GREEN', 'YELLOW']*4
+    rowCode = rowCode % 6
+    #if rowCode >= 24:
+    #    logging.error('No available colour for this mode. ' 
+    #            'Modify the length of the colors list. ')
+    #    raise Exception('See log file.')
+    colors = ['BLUE', 'CYAN', 'RED', 'MAGENTA', 'GREEN', 'YELLOW']
     color = colors[rowCode]
     clr = getattr(Fore, color)
     return(clr)
