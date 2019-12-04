@@ -2,7 +2,7 @@
 
 import unittest
 from unittest.mock import Mock, patch
-import tfl_requests
+#import tfl_requests
 import tfl_requests.trainsLinesStatus as tls
 from tfl_requests.trainsLinesStatus import SAVEFILE, TFLAPI
 from colorama import Fore
@@ -27,17 +27,32 @@ class Testing(unittest.TestCase):
         with self.assertRaises(Exception): 
             tls.detectPythonVersion()
 
-    def test_checkLastTimeExecutedRequests(self):
+
+    @patch('tfl_requests.trainsLinesStatus.'
+                'checkLastTimeExecutedRequests', 
+                return_value = False)
+    def test_checkLastTimeExecutedRequests(self, return_value):
         """
         test_checkLastTimeExecutedRequests: 
         Test of the function determining whether
         a new request is necessary.
         """
         returned = tls.checkLastTimeExecutedRequests()
+        self.assertEqual(returned, False)
+
+
+    def test_checkLastTimeExecutedRequests(self):
+        """
+        test_checkLastTimeExecutedRequests: 
+        Test of the function determining whether
+        a new request is necessary.
+        """
         patcher = patch('tfl_requests.trainsLinesStatus.'
-                'checkLastTimeExecutedRequests', True)
+                'checkLastTimeExecutedRequests', 
+                return_value = True)
         patcher.start()
-        #self.assertEqual(returned, True)
+        returned = tls.checkLastTimeExecutedRequests()
+        self.assertEqual(returned, True)
 
 
     def test_associateStatusColor(self):
@@ -62,20 +77,11 @@ class Testing(unittest.TestCase):
         for printing entries of a file
         to the terminal.
         """
-        #tls.printFormattedData()
-        #mock = Mock()
-        #print = mock
-        #mock.tls.printFormattedData()
-        #list_status = ['Good Service', 'Minor Delays', 
-        #               'Severe Delays', 'Planned Closure',
-        #               'Part Closure', 'Part Suspended', 'bar']
-        #list_colors = [Fore.CYAN, Fore.RED,
-        #               Fore.GREEN, Fore.YELLOW,
-        #               Fore.MAGENTA, Fore.GREEN, Fore.BLUE]
-        #for s, c in zip(list_status, list_colors):
-        #    mock.tls.printFormattedData()  
-        #    #expected = 'Line reports '+ c + s + '\033[0m'
-        #    #self.assertEqual(returned, expected)
+        returned = tls.printFormattedData
+        mock = Mock()
+        print = mock
+        #expected = tls.printFormattedData()
+        #self.assertEqual(returned, expected)
 
 
     def test_requestStatusFromServer(self):

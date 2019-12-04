@@ -96,10 +96,6 @@ def associateStatusColor(rowCode):
     for different line status.
     """
     rowCode = rowCode % 6
-    #if rowCode >= 24:
-    #    logging.error('No available colour for this mode. ' 
-    #            'Modify the length of the colors list. ')
-    #    raise Exception('See log file.')
     colors = ['BLUE', 'CYAN', 'RED', 'MAGENTA', 'GREEN', 'YELLOW']
     color = colors[rowCode]
     clr = getattr(Fore, color)
@@ -175,18 +171,23 @@ def writeAndSaveData(data):
                 sys.exit(-1)
             lineName = status.get('name')
             if lineName == None:
-                logging.error('No such key found in dictionary ' + str(status))
+                logging.error('No such key found in dictionary ' 
+                        + str(status))
                 sys.exit(-1)
             lineStatus = status.get('lineStatuses')[0]
             statusCode = lineStatus.get('statusSeverity')
             if statusCode == None:
-                logging.error('No such key found in dictionary ' + str(status))
+                logging.error('No such key found in dictionary ' 
+                        + str(status))
                 sys.exit(-1)
-            statusDescription = lineStatus.get('statusSeverityDescription')
+            statusDescription = \
+                    lineStatus.get('statusSeverityDescription')
             if statusDescription == None:
-                logging.error('No such key found in dictionary ' + str(status))
+                logging.error('No such key found in dictionary ' +
+                        str(status))
                 sys.exit(-1)
-            f.write('{},{},{}\n'.format(lineName, statusCode, statusDescription))
+            f.write('{},{},{}\n'.format(lineName, 
+                statusCode, statusDescription))
 
 
 def createStatusURL(modes):
@@ -223,8 +224,9 @@ def returnValidModesString(modes):
     if 'dlr' in modes:
         request_modes.append('dlr')
     if (len(request_modes) < 1 or type(request_modes) != list):
-        logging.warning('returnValidModesString: received no valid modes.'
-              ' Aborting.')
+        logging.warning('returnValidModesString:'
+                ' received no valid modes.'
+                ' Aborting.')
         sys.exit(-1)
     request_modes = ','.join(request_modes)
     return(request_modes)
