@@ -29,8 +29,18 @@
 NB The ones I did are marked with [OK], otherwise with [-].
 
 ## Primary
-- replace print statements with log statements. Investigate the use of the "logging" library that comes with Python. [OK]
-- the code uses hardcoded values. can we make it configurable? [OK]
+- fix requirements.txt and requirements-dev.txt. Create new env and start from scratch. 
+- read the documentation of setuptools.py. what does find_packages() do inside my setup.py?
+- implement cli argument to control logging level.
+
+- since we use getattr, could you showcase the use of hasattr() and
+  setattr()? Also, we do not error check where we call getattr.
+
+- the code uses hardcoded values. can we make it configurable? [NOT DONE]
+  LEONIDAS: afto to 300 ekei den einai 
+
+- writeAndSaveData(): can we split it up in more functions? it should make things more easily tested.
+
 - time diffing is complicated. Can we simplify all the logic (unix timestamps)? [OK]
   - compareTime: no input validation, no exception handling. [OK]
   - checkLastTimeExecutedRequests: wrong documentation. [OK]
