@@ -41,11 +41,12 @@ args = parser.parse_args()
 
 TFLAPI = 'https://api.tfl.gov.uk'
 HEADERS = {'Accept': 'application/json; charset=utf-8'}
-if (args.output):
-    SAVEFILE = args.output
-else:
-    SAVEFILE = 'output_lines_status.csv'
-
+SAVEFILE = 'output_lines_status.csv'
+#if (args.output):
+#    SAVEFILE = args.output
+#else:
+#    SAVEFILE = 'output_lines_status.csv'
+#
 
 def configure_logger(lvl='WARNING'):
     """

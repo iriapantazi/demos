@@ -21,13 +21,8 @@
 - cannot import modules error has to do sth w/ __init__ and directories?
 - How can I test the argument parser?
 
-# Iria tasks (by Leonidas)
-## Primary
 - fix requirements.txt and requirements-dev.txt. 
   Create new env and start from scratch. 
-
-- read the documentation of setuptools.py. 
-  what does find_packages() do inside my setup.py?
 
 - implement cli argument to control logging level.
 
@@ -57,5 +52,36 @@
   - getDateTimeFormatted: too elaborate. [OK]
 
 
+# Iria tasks (by Leonidas)
+## Primary
+
+- read the documentation of setuptools.py. 
+  what does find_packages() do inside my setup.py?
+  - Setuptools is used by python developers when they want
+    to release a package on PyPI, which is the main repository
+    for python packages, as well as python interpreters. 
+    When using the 'pip install' command, packages from PyPI
+    are installed on one's computer.
+    The module setup() contains information about building 
+    (and installing) a package, as well as metadata regarding the 
+    developer(s), maintainers, mailing lists, etc.
+
 ## Secondary
-- write a small paragraph why logging is preferable to print statements. [-]
+- write a small paragraph why logging is preferable to print statements. [OK]
+  - Logging has 5 levels of information that can be stored in a separate file.
+    It is also preferred, because these additional information 
+    are kept in a file rather than creating a fuss in the standard output.
+    Logging levels are 'DEBUG', 'INFO', 'WARNING', 'ERROR' and 'CRITICAL' 
+    in hierarchical order from least to most important.
+    The developer can also define additional logging levels, but is is not 
+    recommended, since it may create a clash when modules of third parties
+    are used. By default, the messages logged are the ones with level 
+    warning and above, but the logging module can be configured to include
+    lower levels.
+
+
+
+
+
+
+

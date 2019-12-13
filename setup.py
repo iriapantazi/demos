@@ -1,16 +1,22 @@
+#! /usr/bin/env python
 from setuptools import setup, find_packages
 
 setup(
         name='tfl_requests', 
-        #version='0.1',
+        version='0.0.1',
         packages=find_packages(),
+        #package_dir={'' : 'src'},
+        scripts=[
+            'src/trainsLinesStatus.py',
+            ],
+        install_requires='requirements.txt',
         package_data = {
-            '' : ['*.txt']
+            '' : ['*.txt', '*.md'],
             },
-        install_requires=['python-dateutils'],
-        author='anna', 
+        # metadata to display on pypi
+        author='Iria Pantazi', 
         author_email='iria.a.pantazi@gmail.com',
-        description='utility for tfl line status',
+        description='Utility displaying status of tfl lines',
         keywords='tfl status',
-        url='https://github.com/iriapantazi/tfl_requests', # project homepage
+        url='https://github.com/iriapantazi/tfl_requests',
         )

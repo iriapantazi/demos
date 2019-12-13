@@ -2,9 +2,9 @@
 
 import unittest
 from unittest.mock import Mock, patch
-#import tfl_requests
-import tfl_requests.trainsLinesStatus as tls
-from tfl_requests.trainsLinesStatus import SAVEFILE, TFLAPI
+import src
+from src import trainsLinesStatus as tls
+#import src.trainsLinesStatus as tls
 from colorama import Fore
 import datetime
 import sys
@@ -15,49 +15,49 @@ class Testing(unittest.TestCase):
     of the program trainsLinesStatus.py
     """
 
-    def test_detectPythonVersion(self):
+    def test_detect_python_version(self):
         """
-        test_detectPythonVersion:
+        test_detect_python_version:
         Test if python version is supported.
         """
-        tls.detectPythonVersion()
+        tls.detect_python_version()
 
         patcher = patch('sys.version_info', major=2, minor=7)
         patcher.start()
         with self.assertRaises(Exception): 
-            tls.detectPythonVersion()
+            tls.detect_python_version()
 
 
-    @patch('tfl_requests.trainsLinesStatus.'
-                'checkLastTimeExecutedRequests', 
+    @patch('src.trainsLinesStatus.'
+                'check_last_time_executed_requests', 
                 return_value = False)
-    def test_checkLastTimeExecutedRequests(self, return_value):
+    def test_check_last_time_executed_requests(self, return_value):
         """
-        test_checkLastTimeExecutedRequests: 
+        test_check_last_time_executed_requests:
         Test of the function determining whether
         a new request is necessary.
         """
-        returned = tls.checkLastTimeExecutedRequests()
+        returned = tls.check_last_time_executed_requests()
         self.assertEqual(returned, False)
 
 
-    def test_checkLastTimeExecutedRequests(self):
+    def test_check_last_time_executed_requests(self):
         """
-        test_checkLastTimeExecutedRequests: 
+        test_check_last_time_executed_requests:
         Test of the function determining whether
         a new request is necessary.
         """
-        patcher = patch('tfl_requests.trainsLinesStatus.'
-                'checkLastTimeExecutedRequests', 
+        patcher = patch('src.trainsLinesStatus.'
+                'check_last_time_executed_requests', 
                 return_value = True)
         patcher.start()
-        returned = tls.checkLastTimeExecutedRequests()
+        returned = tls.check_last_time_executed_requests()
         self.assertEqual(returned, True)
 
 
-    def test_associateStatusColor(self):
+    def test_associate_status_color(self):
         """
-        test_associateStatusColor:
+        test_associate_status_color:
         Test of the function assigning
         a color to a line status code.
         """
@@ -65,42 +65,40 @@ class Testing(unittest.TestCase):
                 'MAGENTA', 'GREEN', 'YELLOW']
         colors = [getattr(Fore, i) for i in colors]
         for i in range(0, 100):
-            returned = tls.associateStatusColor(i)
+            returned = tls.associate_status_color(i)
             expected = colors[i % 6]
             self.assertEqual(returned, expected)
 
 
-    def test_printFormattedData(self): 
+    def test_print_saved_data(self): 
         """
-        test_printFormattedData:
+        test_print_saved_data:
         Test of the function responsible
         for printing entries of a file
         to the terminal.
         """
-        returned = tls.printFormattedData
+        returned = tls.print_saved_data()
         mock = Mock()
         print = mock
-        #expected = tls.printFormattedData()
-        #self.assertEqual(returned, expected)
 
 
-    def test_requestStatusFromServer(self):
+    def test_request_status_from_server(self):
         """
-        test_requestStatusFromServer:
+        test_request_status_from_server:
         Tests whether a request is performed, 
         and data are received. 
         """
-        with patch('tfl_requests.trainsLinesStatus.'
-                'requestStatusFromServer') as mock_get:
+        with patch('src.trainsLinesStatus.'
+                'request_status_from_server') as mock_get:
             expected =  '' 
             mock_get.return_value.data = expected
-            returned = tls.requestStatusFromServer('')
+            returned = tls.request_status_from_server('')
         #self.assertEqual(expected, returned)
 
 
-    def test_writeAndSaveData(self):
+    def test_write_save_data(self):
         """
-        test_writeAndSaveData:
+        test_write_save_data:
         Tests whether a file opens, and the
         requested data are written as comma
         separated values.
@@ -111,34 +109,33 @@ class Testing(unittest.TestCase):
                     {'statusSeverity': '0',
                     'statusSeverityDescription': 'ok'}]
                 }]
-        tls.writeAndSaveData(sample_data)
+        tls.write_save_data(sample_data)
         #self.assertEqual()
 
 
-    def test_createStatusURL(self):
+    def test_create_status_URL(self):
         """
-        test_createStatusURL:
+        test_create_status_URL:
         Tests whether the appropriate url
         is created, and returns it.
         """
-        returned = tls.createStatusURL('k')
-        expected = '{}/line/mode/{}/status'.format(TFLAPI, 'k')
+        returned = tls.create_status_URL('k')
+        expected = f'{tls.TFLAPI}/line/mode/k/status'
         self.assertEqual(returned, expected)
 
 
-    def test_returnValidModesString(self):
+    def test_return_valid_modes_string(self):
         """
-        test_returnValidModesString:
+        test_return_valid_modes_string:
         Tests whether the arguments parsed 
         are valid.
         """
 
 
-    def test_returnValidAllModesString(self):
+    def test_return_all_valid_modes_string(self):
         """
-        test_returnValidAllModesString:
+        test_return_all_valid_modes_string:
         """
-
 
 
 if __name__=='__main__':
