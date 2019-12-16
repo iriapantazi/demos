@@ -1,37 +1,43 @@
-# what Iria has to do more
-
-- set a default file to write the output
+# Iria TODO
+---
+- How can I test the argument parser?
 - assert that the file is in the same directory
 - assert that even if file exists it is valid
+- may be some validation cases not considered by developer
+  what should the developer do? Request to be contacted 
+  when a bug is found?
+- which of the two versions of test_checkLastTimeExecutedRequests looks better?
+- In the tests do I have to test individually every Exception that can be raised?
+- use hash in get_dictionary_key  maybe
+- should I substitude every verification in request_status_from_server
+  with 'try/except'?
+
 - finish test_printFormattedData
 - finish test_requestStatusFromServer
-- in writeAndSaveData assemble all exceptions in one
-- add validation for url (None, '', ...)
 - patcher for test_createStatusURL module
 - complete test_printFormattedData
-- which of the two versions of test_checkLastTimeExecutedRequests looks better?
 - test_returnValidModesString
 - test_returnValidAllModesString
-- may be some validation cases not considered by developer
 - maybe use patch when needing in a test function that requires 
   a local variable from the corresponding function.
-- what validation to include in associateStatusColor ?
-- In the tests do I have to test individually every Exception that can be raised?
-- why './tests/test_trainsLinesStatus.py' does not work, while pytest works
+- why './tests/test_trainsLinesStatus.py' does not work, while pytest works?
 - cannot import modules error has to do sth w/ __init__ and directories?
-- How can I test the argument parser?
-
-- fix requirements.txt and requirements-dev.txt. 
-  Create new env and start from scratch. 
-
-- implement cli argument to control logging level.
-
-- since we use getattr, could you showcase the use of hasattr() and
-  setattr()? Also, we do not error check where we call getattr.
-
 
 # Iria Done
 ---
+
+- implement cli argument to control logging level.
+
+- what validation to include in associateStatusColor ? [done]
+
+- in writeAndSaveData assemble all exceptions in one
+
+- add validation for url (None, '', ...)
+
+- set a default file to write the output
+
+- fix requirements.txt and requirements-dev.txt. 
+  Create new env and start from scratch. 
 
 - fixed name conventions 
 
@@ -66,6 +72,17 @@
     (and installing) a package, as well as metadata regarding the 
     developer(s), maintainers, mailing lists, etc.
 
+- since we use getattr, could you showcase the use of hasattr() and
+  setattr()? Also, we do not error check where we call getattr.
+  - setattr() and getattr() are built-in python functions.
+    There are also delattr() and hasattr() functions that are built-in
+    too. All four functions receive an object and a string as input
+    values, except for setattr() which also receives a value. In my
+    case they are used with objects that are dictionary classes.
+    The function hasattr(obj, str) will return True if the object obj
+    has the attribute str, and False otherwise. The function 
+    delattr(obj, str) will delete the attribute obj.str. 
+
 ## Secondary
 - write a small paragraph why logging is preferable to print statements. [OK]
   - Logging has 5 levels of information that can be stored in a separate file.
@@ -78,10 +95,4 @@
     are used. By default, the messages logged are the ones with level 
     warning and above, but the logging module can be configured to include
     lower levels.
-
-
-
-
-
-
 

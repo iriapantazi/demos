@@ -42,11 +42,8 @@ args = parser.parse_args()
 TFLAPI = 'https://api.tfl.gov.uk'
 HEADERS = {'Accept': 'application/json; charset=utf-8'}
 SAVEFILE = 'output_lines_status.csv'
-#if (args.output):
-#    SAVEFILE = args.output
-#else:
-#    SAVEFILE = 'output_lines_status.csv'
-#
+if (args.output):
+    SAVEFILE = args.output
 
 def configure_logger(lvl='WARNING'):
     """
@@ -194,12 +191,12 @@ def get_dictionary_key(theDict, theKey):
     """
     try: 
         theValue = theDict.get(theKey)
+        print(theValue)
     except KeyError:
         msg = f'Dictionary {theDict} contains no key {theKey}.'
         logging.error(msg)
         sys.exit(-1)
-    else:
-        return(theValue)
+    return(theValue)
 
 
 def write_save_data(data):
@@ -245,6 +242,7 @@ def create_status_URL(modes):
         url = f'{TFLAPI}/line/mode/{modes}/status'
     except Exception as e:
         logging.error(e)    
+        sys.exit(-1)
     return(url)
 
 
