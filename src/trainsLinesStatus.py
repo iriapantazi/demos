@@ -108,7 +108,8 @@ def check_last_time_executed_requests(ttl=300):
     except Exception as e:
         logging.critical(e)
         sys.exit(-1)
-    return(toRequest)
+    else:
+        return(toRequest)
 
 
 def associate_status_color(rowCode):
@@ -127,7 +128,8 @@ def associate_status_color(rowCode):
     except Exception as e:
         logging.error(f'Error with the color attributes: {e}')
         clr = getattr(Fore, 'RESET')
-    return(clr)
+    else:
+        return(clr)
 
 
 def print_saved_data():
@@ -152,8 +154,9 @@ def print_saved_data():
             except Exception as e:
                 logging.error(e)
                 sys.exit(-1)
-            print(f'{rowName} Line reports {clr} '
-                    f'{rowDesc} {Fore.RESET}')
+            else:
+                print(f'{rowName} Line reports {clr} '
+                        f'{rowDesc} {Fore.RESET}')
 
 
 def request_status_from_server(url):
@@ -196,7 +199,8 @@ def get_dictionary_key(theDict, theKey):
         msg = f'Dictionary {theDict} contains no key {theKey}.'
         logging.error(msg)
         sys.exit(-1)
-    return(theValue)
+    else:
+        return(theValue)
 
 
 def write_save_data(data):
@@ -243,7 +247,8 @@ def create_status_URL(modes):
     except Exception as e:
         logging.error(e)    
         sys.exit(-1)
-    return(url)
+    else:
+        return(url)
 
 
 def return_valid_modes_string(modes):
