@@ -194,7 +194,6 @@ def get_dictionary_key(theDict, theKey):
     """
     try: 
         theValue = theDict.get(theKey)
-        print(theValue)
     except KeyError:
         msg = f'Dictionary {theDict} contains no key {theKey}.'
         logging.error(msg)
