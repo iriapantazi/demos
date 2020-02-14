@@ -1,8 +1,0 @@
-action: py38, msg: getenv
-cwd: /home/anna/repos/tfl_requests/.tox
-cmd: /home/anna/bin/python -m virtualenv --no-download --python /home/anna/bin/python py38
-Already using interpreter /home/anna/bin/python
-Using base prefix '/usr'
-New python executable in /home/anna/repos/tfl_requests/.tox/py38/bin/python
-Installing setuptools, pip, wheel...
-done.
