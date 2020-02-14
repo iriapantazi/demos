@@ -48,15 +48,7 @@ They are also available through the command
 ### **Example output**
 
 Requesting all line modes with `./tfl_requests/trainsLinesStatus.py -a` example output:
-![image](img/trainslinesstatus_output.png "trainslinesstatus example output")
-
-Runnig the tests with `pytest` example output:
-![image](img/pytest_output.png "pytest example output")
-
-Runnig the tests with `python -m unittest tests/test_trainsLinesStatus.py`
-example output:
-![image](img/unittest_output.png "unittest example utput")
-
+![image](img/trainsLinesStatus_output.png "trainsLinesStatus example output")
 
 ## **Further Amendments**
 There is a number of corrections/amendments that will be done 
