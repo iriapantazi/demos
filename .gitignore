@@ -1,13 +1,4 @@
-build/
-env/
-outputLinesStatus.csv
-.pytest_cache/
-src/output_lines_status.csv
-src/__pycache__
-src/tfl_requests.log
-tests/output_lines_status.csv
+tfl_requests/__pycache__
 tests/__pycache__
-tests/tfl_requests.log
-tfl_requests.egg-info/
-.tox/
-tox-generated.ini
+output_lines_status.csv
+lines_status.log

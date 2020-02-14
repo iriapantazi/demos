@@ -2,40 +2,60 @@
 
 import unittest
 from unittest.mock import Mock, patch
-import src
-from src import trainsLinesStatus as tls
+import tfl_requests
+from tfl_requests import trainsLinesStatus as tls
+from tfl_requests.trainsLinesStatus import LOGFILE
 from colorama import Fore
 import datetime
 import sys
 import requests
+import logging
+
 
 class Testing(unittest.TestCase):
-    """
-    Testing: class that calls the functions
-    of the program trainsLinesStatus.py
-    """
 
-
-    def test_configure_logger(self):
-        """
-        """
 
     def test_detect_python_version(self):
         """
         test_detect_python_version:
         Test if python version is supported.
         """
-        tls.detect_python_version()
+        self.assertEqual(sys.version_info.major, 3)
 
         patcher = patch('sys.version_info', major=2, minor=7)
         patcher.start()
-        with self.assertRaises(Exception): 
+        with self.assertRaises(SystemExit): 
+            # configure logger so that the log message 
+            # is written in the appropriate file, and 
+            # not on the rootwhich is the default.
+            tls.configure_logger(lvl='WARNING')
             tls.detect_python_version()
 
 
-    @patch('src.trainsLinesStatus.'
-                'check_last_time_executed_requests', 
-                return_value = True)
+    def test_parse_arguments(self):
+        """
+        test_parse_arguments:
+        will be concluded in due time.
+        """
+
+
+    def test_configure_logger(self):
+        """
+        test_configure_logger:
+        This function tests the level of messages 
+        that are logged by the program.
+        """
+        tls.configure_logger('INFO')
+        with self.assertLogs(LOGFILE, level='INFO') as asslog:
+            logging.getLogger(LOGFILE).info('info will be logged')
+            logging.getLogger(LOGFILE).debug('debug will NOT be logged')
+        self.assertEqual(asslog.output,
+                ['INFO:lines_status.log:info will be logged'])
+
+
+    @patch('tfl_requests.trainsLinesStatus.'
+            'check_last_time_executed_requests', 
+            return_value = True)
     def test_check_last_time_executed_requests(self, return_value):
         """
         test_check_last_time_executed_requests:
@@ -46,16 +66,13 @@ class Testing(unittest.TestCase):
         self.assertEqual(returned, True)
 
 
-        ### OR ###
-
-
     def test_check_last_time_executed_requests_2(self):
         """
         test_check_last_time_executed_requests:
         Test of the function determining whether
         a new request is necessary.
         """
-        patcher = patch('src.trainsLinesStatus.'
+        patcher = patch('tfl_requests.trainsLinesStatus.'
                 'check_last_time_executed_requests', 
                 return_value = False)
         patcher.start()
@@ -69,15 +86,12 @@ class Testing(unittest.TestCase):
         Test the exception raise of the function determining 
         whether a new request is necessary.
         """
-        patcher = patch('src.trainsLinesStatus.'
+        patcher = patch('tfl_requests.trainsLinesStatus.'
                 'check_last_time_executed_requests', 
                 side_effect = Exception)
         patcher.start()
         with self.assertRaises(Exception):
             tls.check_last_time_executed_requests()
-
-
-        ### OR ###
 
 
     def test_check_last_time_executed_requests_exceptions_2(self):
@@ -90,6 +104,9 @@ class Testing(unittest.TestCase):
         tls.check_last_time_executed_requests.side_effect = FileNotFoundError
         with self.assertRaises(FileNotFoundError):
             tls.check_last_time_executed_requests()
+        tls.check_last_time_executed_requests.side_effect = ValueError
+        with self.assertRaises(ValueError):
+            tls.check_last_time_executed_requests()
 
 
     def test_associate_status_color(self):
@@ -97,6 +114,8 @@ class Testing(unittest.TestCase):
         test_associate_status_color:
         Test of the function assigning
         a color to a line status code.
+        N.B. missing the assertion when
+        Exception is raised.
         """
         colors = ['BLUE', 'CYAN', 'RED', 
                 'MAGENTA', 'GREEN', 'YELLOW']
@@ -107,14 +126,12 @@ class Testing(unittest.TestCase):
             self.assertEqual(returned, expected)
 
 
-    #def test_print_saved_data(self): 
-    #    """
-    #    test_print_saved_data:
-    #    Test of the function responsible
-    #    for printing entries of a file
-    #    to the terminal.
-    #    """
 
+    def test_print_save_data(self):
+        """
+        test_print_save_data:
+        Will be concluded in due time.
+        """
 
     def test_request_status_from_server(self):
         """
@@ -129,8 +146,11 @@ class Testing(unittest.TestCase):
 
     def test_get_dictionary_key(self):
         """
+        test_get_dictionary_key:
+        Test whether the returned value
+        of the key is the correct one.
         """
-        example_dict = {'key_1' : 'val_1'}
+        example_dict = {'key_1': 'val_1'}
         returned = tls.get_dictionary_key(example_dict, 'key_1')
         expected = example_dict.get('key_1')
         self.assertEqual(returned, expected)
@@ -138,7 +158,6 @@ class Testing(unittest.TestCase):
         returned = tls.get_dictionary_key(example_dict, 'key_3')
         expected = None
         self.assertEqual(returned, expected)
-            
 
 
     def test_write_save_data(self):
@@ -147,6 +166,7 @@ class Testing(unittest.TestCase):
         Tests whether a file opens, and the
         requested data are written as comma
         separated values.
+        N.B. incomplete as no assertion takes place.
         """
         correct_data = [
                 {'name': 'a_name', 
@@ -155,7 +175,6 @@ class Testing(unittest.TestCase):
                     'statusSeverityDescription': 'ok'}]
                 }]
         tls.write_save_data(correct_data)
-        #self.assertEqual()
 
 
     def test_create_status_URL(self):
@@ -175,36 +194,26 @@ class Testing(unittest.TestCase):
         Tests whether the arguments parsed 
         are valid.
         """
-        sample = 'tube,tram'
-        returned = tls.return_valid_modes_string(sample)
-        self.assertEqual(sample, returned)
-
-        sample = 'tram,tube'
-        returned = tls.return_valid_modes_string(sample)
-        expected = 'tube,tram'
-        self.assertEqual(expected, returned)
 
 
     def test_return_all_valid_modes_string(self):
         """
         test_return_all_valid_modes_string:
         """
+        sample = 'tube,tram'
+        returned = tls.return_all_valid_modes_string()
+        self.assertNotEqual(sample, returned)
+
+        expected = 'tube,tram,overground,dlr,tflrail'
+        returned = tls.return_all_valid_modes_string()
+        self.assertEqual(expected, returned)
 
 
-    def test_set_logger(self):
+    def test_main(self):
         """
+        test_main:
+        N.B. incomplete.
         """
-
-
-    def test_ttl_toRequest(self):
-        """
-        """
-
-
-    def test_execute_request(self):
-        """
-        """
-
 
 if __name__=='__main__':
     unittest.main()

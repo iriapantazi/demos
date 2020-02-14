@@ -1,0 +1,48 @@
+action: GLOB, msg: packaging
+cwd: /home/anna/repos/tfl_requests
+cmd: /home/anna/bin/python setup.py sdist --formats=zip --dist-dir .tox/dist
+running sdist
+running egg_info
+writing tfl_requests.egg-info/PKG-INFO
+writing dependency_links to tfl_requests.egg-info/dependency_links.txt
+writing requirements to tfl_requests.egg-info/requires.txt
+writing top-level names to tfl_requests.egg-info/top_level.txt
+reading manifest file 'tfl_requests.egg-info/SOURCES.txt'
+writing manifest file 'tfl_requests.egg-info/SOURCES.txt'
+running check
+creating tfl_requests-0.0.1
+creating tfl_requests-0.0.1/src
+creating tfl_requests-0.0.1/tests
+creating tfl_requests-0.0.1/tfl_requests.egg-info
+copying files to tfl_requests-0.0.1...
+copying README.md -> tfl_requests-0.0.1
+copying setup.py -> tfl_requests-0.0.1
+copying src/__init__.py -> tfl_requests-0.0.1/src
+copying src/trainsLinesStatus.py -> tfl_requests-0.0.1/src
+copying tests/__init__.py -> tfl_requests-0.0.1/tests
+copying tests/test_trainsLinesStatus.py -> tfl_requests-0.0.1/tests
+copying tfl_requests.egg-info/PKG-INFO -> tfl_requests-0.0.1/tfl_requests.egg-info
+copying tfl_requests.egg-info/SOURCES.txt -> tfl_requests-0.0.1/tfl_requests.egg-info
+copying tfl_requests.egg-info/dependency_links.txt -> tfl_requests-0.0.1/tfl_requests.egg-info
+copying tfl_requests.egg-info/requires.txt -> tfl_requests-0.0.1/tfl_requests.egg-info
+copying tfl_requests.egg-info/top_level.txt -> tfl_requests-0.0.1/tfl_requests.egg-info
+Writing tfl_requests-0.0.1/setup.cfg
+creating '.tox/dist/tfl_requests-0.0.1.zip' and adding 'tfl_requests-0.0.1' to it
+adding 'tfl_requests-0.0.1'
+adding 'tfl_requests-0.0.1/src'
+adding 'tfl_requests-0.0.1/tfl_requests.egg-info'
+adding 'tfl_requests-0.0.1/tests'
+adding 'tfl_requests-0.0.1/PKG-INFO'
+adding 'tfl_requests-0.0.1/README.md'
+adding 'tfl_requests-0.0.1/setup.cfg'
+adding 'tfl_requests-0.0.1/setup.py'
+adding 'tfl_requests-0.0.1/src/trainsLinesStatus.py'
+adding 'tfl_requests-0.0.1/src/__init__.py'
+adding 'tfl_requests-0.0.1/tfl_requests.egg-info/dependency_links.txt'
+adding 'tfl_requests-0.0.1/tfl_requests.egg-info/SOURCES.txt'
+adding 'tfl_requests-0.0.1/tfl_requests.egg-info/requires.txt'
+adding 'tfl_requests-0.0.1/tfl_requests.egg-info/PKG-INFO'
+adding 'tfl_requests-0.0.1/tfl_requests.egg-info/top_level.txt'
+adding 'tfl_requests-0.0.1/tests/test_trainsLinesStatus.py'
+adding 'tfl_requests-0.0.1/tests/__init__.py'
+removing 'tfl_requests-0.0.1' (and everything under it)
