@@ -18,8 +18,12 @@ standard output, and saved in a file named
 The program is written in Python 3.6 and can run 
 with Python versions 3.7 and 3.8. The program will 
 exit if it is used Python 2.7.
-It is suggested that the user creates a virtual environment, 
-and installs the package requirements with the command 
+It is suggested that the user creates a virtual environment. 
+Such packages for creating and using virtual environments are 
+[mkvirtualenv](https://realpython.com/python-virtual-environments-a-primer/) 
+and [pyenv](https://realpython.com/intro-to-pyenv/).
+After initialising a virtual environment, the user 
+has to install the package requirements with the command 
 `pip install -r requirements.txt`.
 
 ### **Running the tests**
@@ -28,30 +32,56 @@ run the tests by using the command
 `pytest` or `python -m unittest tests/test_trainsLinesStatus.py`. 
 
 ## **Information on input and output**
+The program provides a  variation of argumants that can be parsed. 
+These are:
+1. `-m` for providing the desired modes, e.g. tram.
+2. `-a` for all the available tfl modes.
+3. `-f` for forcing a request.
+4. `-t` for specifying the time that has passed before a new request to the API is done.
+5. `-o` for setting the file that the output of the request is written. 
+6. `-l` for specifying the logging level.
 
-### **Example input** 
-![image](img/example_output.png "Output Example")
+They are also available through the command 
+`./tfl_requests/trainsLinesStatus.py -h`.
 
-### **Example output** 
-![image](img/example_output.png "Output Example")
 
-### **Log files**
+### **Example output**
+
+Requesting all line modes with `./tfl_requests/trainsLinesStatus.py -a` example output:
+![image](img/trainslinesstatus_output.png "trainslinesstatus example output")
+
+Runnig the tests with `pytest` example output:
+![image](img/pytest_output.png "pytest example output")
+
+Runnig the tests with `python -m unittest tests/test_trainsLinesStatus.py`
+example output:
+![image](img/unittest_output.png "unittest example utput")
+
 
 ## **Further Amendments**
 There is a number of corrections/amendments that will be done 
 in due time. These include:
-- fix the timestamp in LOGFILE
-- Option of defining logging level through an integer
-- Uppercase in logging lever to be asserted or corrected by program
-- Reduce hard-coded values
-- PEP8 assessment
-- Include tests for parser
-- Merge duplicate tests and account for all exceptions
-- Critical log messages that lead to system exit to be printed on stdout
-- Mock logger
-- Support for Python 3.4 and 3.5
-- If new request with a different valid mode is performed within less than ttl seconds, 
-then either do the request, or print only the requested mode(s) requested
+
+- Logging:
+    - Fix the timestamp in LOGFILE.
+    - Option of defining logging level through an integer.
+    - Uppercase in logging lever to be asserted or corrected by program.
+    - Critical log messages that lead to system exit to be printed on stdout.
+
+- Testing:
+    - Include tests for parser.
+    - Merge duplicate tests and account for all exceptions.
+    - Include a tox.ini file for testing automation. 
+
+- Python versions:
+    - Support for Python 3.4 and 3.5.
+
+- Miscellaneous:
+    - Include more output figures.
+    - Reduce hard-coded values.
+    - If new request with a different valid mode is performed within less than ttl 
+    seconds, then either do the request, or print only the requested mode(s) requested.
+    - Incluse a setup.py file.
 
 ## **Authors** 
 If you have any suggestions/corrections, 
