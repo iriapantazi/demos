@@ -32,7 +32,7 @@ run the tests by using the command
 `pytest` or `python -m unittest tests/test_trainsLinesStatus.py`. 
 
 ## **Information on input and output**
-The program provides a  variation of argumants that can be parsed. 
+The program provides a  variation of arguments that can be parsed. 
 These are:
 1. `-m` for providing the desired modes, e.g. tram.
 2. `-a` for all the available tfl modes.
@@ -73,10 +73,10 @@ in due time. These include:
     - Reduce hard-coded values.
     - If new request with a different valid mode is performed within less than ttl 
     seconds, then either do the request, or print only the requested mode(s) requested.
-    - Incluse a setup.py file.
+    - Include a setup.py file.
 
 ## **Authors** 
 If you have any suggestions/corrections, 
-please contct [Iria Pantazi](iria.a.pantazi@gmail.com).
+please contact [Iria Pantazi](iria.a.pantazi@gmail.com).
 
 
